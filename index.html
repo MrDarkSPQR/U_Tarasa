@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню - У Тараса</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        body { 
+            background-color: #1e150d; 
+            background-image: linear-gradient(to bottom, #1e150d, #261a10);
+            color: #f3e5ab; 
+            min-height: 100vh;
+        }
+        .wood-card { background: #2d1f15; border: 1px solid #422f21; }
+        .accent-gold { color: #f59e0b; }
+        .nav-btn { background: #3d2b1f; border: 1px solid #5a3d2b; transition: all 0.2s; }
+        .nav-btn-active { background: #854d0e; border-color: #a16207; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-show { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="font-serif">
+
+    <h1 class="sr-only">Меню ресторану У Тараса</h1>
+
+    <header class="sticky top-0 z-50 bg-[#1e150d]/95 backdrop-blur-md border-b border-[#422f21]">
+        <div class="flex overflow-x-auto py-4 px-4 space-x-3 no-scrollbar">
+            <button onclick="scrollToCat('bf', this)" class="nav-btn-active whitespace-nowrap px-4 py-2 text-white rounded-xl font-bold flex items-center gap-2">🍳 Сніданки</button>
+            <button onclick="scrollToCat('soup', this)" class="nav-btn whitespace-nowrap px-4 py-2 rounded-xl font-bold flex items-center gap-2 border text-[#f3e5ab]">🍲 Супи</button>
+            <button onclick="scrollToCat('main', this)" class="nav-btn whitespace-nowrap px-4 py-2 rounded-xl font-bold flex items-center gap-2 border text-[#f3e5ab]">🍖 Страви</button>
+            <button onclick="scrollToCat('pizza', this)" class="nav-btn whitespace-nowrap px-4 py-2 rounded-xl font-bold flex items-center gap-2 border text-[#f3e5ab]">🍕 Піца</button>
+            <button onclick="scrollToCat('drink', this)" class="nav-btn whitespace-nowrap px-4 py-2 rounded-xl font-bold flex items-center gap-2 border text-[#f3e5ab]">🥤 Напої</button>
+            <button onclick="scrollToCat('alc', this)" class="nav-btn whitespace-nowrap px-4 py-2 rounded-xl font-bold flex items-center gap-2 border text-[#f3e5ab]">🍷 Бар</button>
+        </div>
+    </header>
+
+    <main class="p-4 space-y-12 pb-24 max-w-md mx-auto">
+        <div id="menu-container"></div>
+    </main>
+
+    <script>
+        const categories = [
+            { id: 'bf', name: 'Сніданки', icon: '🍳' },
+            { id: 'soup', name: 'Гарячі супи', icon: '🍲' },
+            { id: 'main', name: 'Основні страви', icon: '🍖' },
+            { id: 'pizza', name: 'Піца з печі', icon: '🍕' },
+            { id: 'drink', name: 'Напої', icon: '🥤' },
+            { id: 'alc', name: 'Міцні напої', icon: '🥃' }
+        ];
+
+        const menuData = [
+            { cat: 'bf', name: 'Яєчня з беконом', price: '120 грн', desc: 'Три яйця, підсмажений бекон, свіжа зелень.', img: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400' },
+            { cat: 'bf', name: 'Вівсянка', price: '85 грн', desc: 'На молоці з вершковим маслом.', img: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=400' },
+            { cat: 'bf', name: 'Манна каша', price: '75 грн', desc: 'Класична манка, як у дитинстві.', img: 'https://images.unsplash.com/photo-1594610374413-f15e4f4b23a1?w=400' },
+            { cat: 'bf', name: 'Макарони з сосискою', price: '115 грн', desc: 'Макарони, відварна сосиска та свіжий салат.', img: 'https://images.unsplash.com/photo-1516100882582-96c3a05fe590?w=400' },
+            { cat: 'soup', name: 'Борщ український', price: '135 грн', desc: 'З яловичиною, подається зі сметаною.', img: 'https://images.unsplash.com/photo-1547592110-8036d17db331?w=400' },
+            { cat: 'soup', name: 'Бограч', price: '165 грн', desc: 'Закарпатський гострий суп.', img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400' },
+            { cat: 'soup', name: 'Крем-суп овочевий', price: '145 грн', desc: 'Ніжна текстура, сезонні овочі.', img: 'https://images.unsplash.com/photo-1603105033880-280fe7ed5f97?w=400' },
+            { cat: 'soup', name: 'Бульйон курячий', price: '95 грн', desc: 'З домашньою локшиною.', img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400' },
+            { cat: 'soup', name: 'Грибна юшка', price: '155 грн', desc: 'З білих лісових грибів.', img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400' },
+            { cat: 'main', name: 'Закарпатський Глечик', price: '190 грн', desc: 'М\'ясо, запечене з картоплею та грибами.', img: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?w=400' },
+            { cat: 'main', name: 'Гуцульський Глечик', price: '190 грн', desc: 'Традиційний горщик із запалу із жару.', img: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?w=400' },
+            { cat: 'main', name: 'Ситий Кум', price: '185 грн', desc: 'Величезний дерун з м\'ясною начинкою.', img: 'https://images.unsplash.com/photo-1606755962773-d32330a62a8d?w=400' },
+            { cat: 'main', name: 'Стейк зі свинини', price: '290 грн', desc: 'Соковита вирізка на грилі.', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400' },
+            { cat: 'main', name: 'Курячий стейк', price: '210 грн', desc: 'Ніжне філе зі спеціями.', img: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400' },
+            { cat: 'main', name: 'Картопляне пюре', price: '65 грн', desc: 'З вершковим маслом.', img: 'https://images.unsplash.com/photo-1514516369414-797773027d0a?w=400' },
+            { cat: 'main', name: 'Картопля Фрі', price: '85 грн', desc: 'Хрустка з сіллю.', img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400' },
+            { cat: 'main', name: 'Сметана', price: '25 грн', desc: 'Домашня, густа.', img: 'https://images.unsplash.com/photo-1585325701166-feafdec6335a?w=400' },
+            { cat: 'main', name: 'Кетчуп', price: '25 грн', desc: 'Класичний томатний.', img: 'https://images.unsplash.com/photo-1585325701166-feafdec6335a?w=400' },
+            { cat: 'pizza', name: 'Піца з сиром', price: '205 грн', desc: 'Чотири сири, моцарела.', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400' },
+            { cat: 'pizza', name: 'Піца з ковбасою', price: '215 грн', desc: 'Салямі, томати, сир.', img: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400' },
+            { cat: 'drink', name: 'Кока-Кола', price: '45 грн', desc: '0.5л ж/б.', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400' },
+            { cat: 'drink', name: 'Фанта / Спрайт', price: '45 грн', desc: '0.5л пляшка.', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400' },
+            { cat: 'drink', name: 'Сік апельсиновий', price: '30 грн', desc: 'Склянка 200мл.', img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400' },
+            { cat: 'drink', name: 'Чай Чорний', price: '40 грн', desc: 'Заварний у чайнику.', img: 'https://images.unsplash.com/photo-1544787210-2211d64b56ee?w=400' },
+            { cat: 'drink', name: 'Чай Зелений', price: '40 грн', desc: 'Заварний у чайнику.', img: 'https://images.unsplash.com/photo-1544787210-2211d64b56ee?w=400' },
+            { cat: 'drink', name: 'Компот домашній', price: '25 грн', desc: 'З лісових ягід.', img: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=400' },
+            { cat: 'alc', name: 'Домашнє вино', price: '65 грн', desc: 'Закарпатське (100мл).', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400' },
+            { cat: 'alc', name: 'Горілка (Водка)', price: '45 грн', desc: '50мл.', img: 'https://images.unsplash.com/photo-1614313511347-147c3a81b257?w=400' },
+            { cat: 'alc', name: 'Коньяк', price: '75 грн', desc: '50мл.', img: 'images/konyak.png' },
+            { cat: 'alc', name: 'Віскі', price: '95 грн', desc: '50мл.', img: 'https://images.unsplash.com/photo-1527047154791-5129c18d86e3?w=400' }
+        ];
+
+        function buildMenu() {
+            const container = document.getElementById('menu-container');
+            categories.forEach(category => {
+                const section = document.createElement('section');
+                section.className = "mb-10";
+                section.innerHTML = `
+                    <h2 id="${category.id}" class="text-3xl font-black mb-6 flex items-center gap-3 accent-gold tracking-wide">
+                        <span>${category.icon}</span> ${category.name}
+                    </h2>
+                    <div id="${category.id}-items" class="space-y-4"></div>
+                `;
+                container.appendChild(section);
+
+                const itemsList = document.getElementById(`${category.id}-items`);
+                menuData.filter(i => i.cat === category.id).forEach((item, idx) => {
+                    const cardId = `${category.id}-${idx}`;
+                    const card = document.createElement('div');
+                    card.className = "wood-card rounded-2xl p-4 transition-all active:scale-[0.97]";
+                    card.innerHTML = `
+                        <div class="flex items-center gap-4 cursor-pointer" onclick="toggleDetails('${cardId}')">
+                            <img src="${item.img}" class="w-16 h-16 rounded-xl object-cover object-center border border-[#422f21]" alt="${item.name}">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg leading-tight">${item.name}</h3>
+                                <p class="accent-gold font-black">${item.price}</p>
+                            </div>
+                            <span id="icon-${cardId}" class="text-xl opacity-40">＋</span>
+                        </div>
+                        <div id="desc-${cardId}" class="hidden mt-4 pt-4 border-t border-[#422f21] animate-show text-sm text-[#f3e5ab]/80">
+                            <p class="mb-4 leading-relaxed">${item.desc}</p>
+                            <img src="${item.img}" class="w-full h-48 object-cover object-center rounded-xl shadow-lg border border-[#422f21]" alt="">
+                        </div>
+                    `;
+                    itemsList.appendChild(card);
+                });
+            });
+        }
+
+        function toggleDetails(id) {
+            const desc = document.getElementById(`desc-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            desc.classList.toggle('hidden');
+            icon.innerText = desc.classList.contains('hidden') ? '＋' : '✕';
+            icon.classList.toggle('opacity-100');
+        }
+
+        function scrollToCat(id, btn) {
+            const element = document.getElementById(id);
+            const offset = 80;
+            window.scrollTo({
+                top: element.offsetTop - offset,
+                behavior: 'smooth'
+            });
+
+            document.querySelectorAll('header button').forEach(b => {
+                b.classList.remove('nav-btn-active');
+                b.classList.add('nav-btn');
+            });
+            btn.classList.add('nav-btn-active');
+            btn.classList.remove('nav-btn');
+        }
+
+        buildMenu();
+    </script>
+</body>
+</html>
